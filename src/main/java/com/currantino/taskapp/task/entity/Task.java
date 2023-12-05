@@ -48,12 +48,12 @@ public class Task {
     private TaskPriority priority;
 
     @ManyToOne
-    @JoinColumn(name = "creator_id",
+    @JoinColumn(name = "task_creator_id",
             nullable = false)
     private User creator;
 
     @ManyToOne
-    @JoinColumn(name = "assignee_id")
+    @JoinColumn(name = "task_assignee_id")
     private User assignee;
 
 }
