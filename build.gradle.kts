@@ -1,3 +1,4 @@
+val querydslVersion: String by project
 val mapstructVersion: String by project
 val lombokMapstructBindingVersion: String by project
 
@@ -6,6 +7,8 @@ plugins {
     id("org.springframework.boot") version "3.2.0"
     id("io.spring.dependency-management") version "1.1.4"
     id("org.springdoc.openapi-gradle-plugin") version "1.6.0"
+//    id("com.ewerk.gradle.plugins.querydsl") version "1.0.10"
+    id("java-library")
 }
 
 group = "com.currantino"
@@ -49,6 +52,12 @@ dependencies {
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
     implementation("io.swagger.core.v3:swagger-annotations:2.2.14")
+
+    implementation("com.querydsl:querydsl-jpa:${querydslVersion}:jakarta")
+    annotationProcessor("com.querydsl:querydsl-apt:${querydslVersion}:jakarta")
+    annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+    annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+
 }
 
 tasks.withType<Test> {
