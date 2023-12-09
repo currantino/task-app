@@ -1,0 +1,20 @@
+services:
+  task-app-postgres:
+    image: 'postgres:latest'
+    environment:
+      - 'POSTGRES_DB=postgres'
+      - 'POSTGRES_PASSWORD=password'
+      - 'POSTGRES_USER=postgres'
+    ports:
+      - '5433:5432'
+
+  task-app:
+    image: 'task-app:0.0.1-SNAPSHOT'
+    depends_on:
+      - task-app-postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://task-app-postgres:5433/postgres
+      HIBERNATE_CONNECTION_URL: jdbc:postgresql://task-app-postgres:5433/postgres
+
+    ports:
+      - '8080:8080'
