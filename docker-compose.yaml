@@ -23,11 +23,13 @@ services:
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_USER: postgres
+    #TODO: Add volume
     expose:
       - 5432
 
   task-app-redis:
     image: 'redis:7'
+    #TODO: Add username, password, volume
     expose:
       - 6379
 
