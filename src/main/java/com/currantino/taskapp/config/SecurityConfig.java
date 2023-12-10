@@ -21,11 +21,9 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
-    private final UserDetailsService userDetailsService;
 
     public SecurityConfig(JwtFilter jwtFilter, UserDetailsService userDetailsService) {
         this.jwtFilter = jwtFilter;
-        this.userDetailsService = userDetailsService;
     }
 
 
@@ -36,24 +34,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        return http
-//                .httpBasic(httpBasic -> httpBasic.disable())
-//                .csrf(csrf -> csrf.disable())
-//                .cors(withDefaults())
-//                .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(STATELESS))
-//                .authorizeHttpRequests(authz -> authz
-//                        .requestMatchers("/api/*/auth/**",
-//                                "/v3/**",
-//                                "/swagger-ui/**")
-//                        .permitAll()
-//                        .anyRequest().authenticated()
-//                )
-//                .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-//                .userDetailsService(userDetailsService)
-//                .logout(logout -> logout
-//                        //TODO: Add logout url
-//                        .logoutUrl("/api/v1/auth/logout"))
-//                .build();
         return http
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .csrf(csrf -> csrf.disable())
