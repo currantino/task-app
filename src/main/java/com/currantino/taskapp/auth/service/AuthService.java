@@ -2,6 +2,7 @@ package com.currantino.taskapp.auth.service;
 
 import com.currantino.taskapp.exception.AccessDeniedException;
 import com.currantino.taskapp.exception.InvalidRefreshTokenException;
+import com.currantino.taskapp.exception.UserAlreadyExistsException;
 import com.currantino.taskapp.exception.UserNotFoundException;
 import com.currantino.taskapp.jwt.JwtAuthentication;
 import com.currantino.taskapp.jwt.JwtProvider;
@@ -41,6 +42,9 @@ public class AuthService {
     }
 
     public UserFullDto signup(UserCredentialsDto userDto) {
+        if (userRepository.existsByEmail(userDto.email())) {
+            throw new UserAlreadyExistsException("User with email %s already exists.".formatted(userDto.email()));
+        }
         User user = userMapper.toEntity(userDto);
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);

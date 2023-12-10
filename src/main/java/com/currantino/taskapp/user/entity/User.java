@@ -38,7 +38,8 @@ public class User {
             length = 127)
     private String password;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Role role = Role.USER;
 
 }
