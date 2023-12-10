@@ -109,10 +109,6 @@ public class AuthService {
         throw new JwtException("Invalid refresh token");
     }
 
-    public JwtAuthentication getAuthInfo() {
-        return (JwtAuthentication) SecurityContextHolder.getContext().getAuthentication();
-    }
-
     public Long getLoggedInUserId() {
         return ((JwtAuthentication) SecurityContextHolder.getContext().getAuthentication()).getUser().getId();
     }
