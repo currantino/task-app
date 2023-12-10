@@ -18,12 +18,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class AuthService {
@@ -31,14 +29,19 @@ public class AuthService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
-    private final Map<String, String> refreshStorage = new ConcurrentHashMap<>();
+    private final StringRedisTemplate redis;
 
     @Autowired
-    public AuthService(PasswordEncoder passwordEncoder, UserMapper userMapper, UserRepository userRepository, JwtProvider jwtProvider) {
+    public AuthService(PasswordEncoder passwordEncoder,
+                       UserMapper userMapper,
+                       UserRepository userRepository,
+                       JwtProvider jwtProvider,
+                       StringRedisTemplate redis) {
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
         this.userRepository = userRepository;
         this.jwtProvider = jwtProvider;
+        this.redis = redis;
     }
 
     public UserFullDto signup(UserCredentialsDto userDto) {
@@ -72,18 +75,17 @@ public class AuthService {
     private JwtResponse generateTokens(User user) {
         final String accessToken = jwtProvider.generateAccessToken(user);
         final String refreshToken = jwtProvider.generateRefreshToken(user);
-        //TODO: maybe put in redis
-        refreshStorage.put(user.getEmail(), refreshToken);
+        redis.opsForValue().set(user.getEmail(), refreshToken);
         return new JwtResponse(accessToken, refreshToken);
     }
 
     public JwtResponse getAccessToken(@NonNull String refreshToken) {
         if (!jwtProvider.validateRefreshToken(refreshToken)) {
-            return new JwtResponse(null, null);
+            throw new InvalidRefreshTokenException("Invalid refresh token.");
         }
         final Claims claims = jwtProvider.getRefreshClaims(refreshToken);
         final String email = claims.getSubject();
-        final String savedRefreshToken = refreshStorage.get(email);
+        final String savedRefreshToken = redis.opsForValue().get(email);
         if (savedRefreshToken == null || !savedRefreshToken.equals(refreshToken)) {
             throw new InvalidRefreshTokenException("Provided refresh token is invalid.");
         }
@@ -97,7 +99,7 @@ public class AuthService {
         if (jwtProvider.validateRefreshToken(refreshToken)) {
             final Claims claims = jwtProvider.getRefreshClaims(refreshToken);
             final String email = claims.getSubject();
-            final String saveRefreshToken = refreshStorage.get(email);
+            final String saveRefreshToken = redis.opsForValue().get(email);
             if (saveRefreshToken != null && saveRefreshToken.equals(refreshToken)) {
                 final User user = userRepository.findByEmail(email)
                         .orElseThrow(() -> new UserNotFoundException("Cannot find user %s.".formatted(email)));
