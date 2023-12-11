@@ -6,6 +6,7 @@ import com.currantino.taskapp.exception.TaskNotFoundException;
 import com.currantino.taskapp.exception.UserNotFoundException;
 import com.currantino.taskapp.task.controller.TaskFullDto;
 import com.currantino.taskapp.task.dto.CreateTaskDto;
+import com.currantino.taskapp.task.dto.TaskFilterDto;
 import com.currantino.taskapp.task.dto.UpdateTaskDto;
 import com.currantino.taskapp.task.entity.Task;
 import com.currantino.taskapp.task.entity.TaskStatus;
@@ -13,11 +14,15 @@ import com.currantino.taskapp.task.mapper.TaskMapper;
 import com.currantino.taskapp.task.repository.TaskRepository;
 import com.currantino.taskapp.user.entity.User;
 import com.currantino.taskapp.user.repository.UserRepository;
+import com.currantino.taskapp.util.QPredicate;
+import com.querydsl.core.types.Predicate;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import static com.currantino.taskapp.task.entity.QTask.task;
 
 @Service
 public class TaskService {
@@ -37,6 +42,28 @@ public class TaskService {
         this.authService = authService;
     }
 
+    @Transactional
+    public Page<TaskFullDto> getTasksFiltered(
+            TaskFilterDto filter,
+            Pageable pageable
+    ) {
+        if (filter == null) {
+            return taskRepository.findAll(pageable)
+                    .map(taskMapper::toFullDto);
+        }
+
+        Predicate predicate = QPredicate.builder()
+                .add(filter.name(), task.name::containsIgnoreCase)
+                .add(filter.description(), task.description::containsIgnoreCase)
+                .add(filter.status(), task.status::eq)
+                .add(filter.priority(), task.priority::eq)
+                .add(filter.assigneeId(), task.assignee.id::eq)
+                .add(filter.creatorId(), task.creator.id::eq)
+                .buildAnd();
+        return taskRepository.findAll(predicate, pageable)
+                .map(taskMapper::toFullDto);
+
+    }
 
     @Transactional
     public TaskFullDto addTask(CreateTaskDto createTaskDto) {

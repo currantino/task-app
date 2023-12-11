@@ -2,4 +2,5 @@
 
 ./gradlew clean
 ./gradlew bootJar
-java -jar build/libs/task-app-0.0.1-SNAPSHOT.jar
+docker-compose build --no-cache
+docker-compose up --force-recreate

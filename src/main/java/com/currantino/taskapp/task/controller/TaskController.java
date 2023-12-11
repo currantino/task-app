@@ -1,7 +1,9 @@
 package com.currantino.taskapp.task.controller;
 
 import com.currantino.taskapp.task.dto.CreateTaskDto;
+import com.currantino.taskapp.task.dto.TaskFilterDto;
 import com.currantino.taskapp.task.dto.UpdateTaskDto;
+import com.currantino.taskapp.task.entity.TaskPriority;
 import com.currantino.taskapp.task.entity.TaskStatus;
 import com.currantino.taskapp.task.service.TaskService;
 import jakarta.validation.Valid;
@@ -39,6 +41,39 @@ public class TaskController {
         TaskFullDto task = taskService.addTask(createTaskDto);
         return ResponseEntity.ok(task);
     }
+
+    @GetMapping()
+    public Page<TaskFullDto> getTasksFiltered(
+            @RequestParam(name = "size",
+                    defaultValue = "10")
+            Integer pageSize,
+            @RequestParam(name = "from", defaultValue = "0")
+            Integer pageFrom,
+            @RequestParam(required = false)
+            String name,
+            @RequestParam(required = false)
+            String description,
+            @RequestParam(required = false)
+            TaskStatus status,
+            @RequestParam(required = false)
+            TaskPriority priority,
+            @RequestParam(required = false)
+            Long assigneeId,
+            @RequestParam(required = false)
+            Long creatorId
+    ) {
+        TaskFilterDto filter = new TaskFilterDto(
+                name,
+                description,
+                status,
+                priority,
+                assigneeId,
+                creatorId
+        );
+        Pageable pageable = PageRequest.of(pageFrom, pageSize);
+        return taskService.getTasksFiltered(filter, pageable);
+    }
+
 
     @GetMapping("/creator/{creatorId}")
     public ResponseEntity<Page<TaskFullDto>> getTasksByCreator(

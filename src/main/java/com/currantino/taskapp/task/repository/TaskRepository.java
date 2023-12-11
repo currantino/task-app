@@ -5,10 +5,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TaskRepository extends JpaRepository<Task, Long> {
+public interface TaskRepository extends JpaRepository<Task, Long>, QuerydslPredicateExecutor<Task> {
     @Query("""
             SELECT t
             FROM Task t
@@ -17,7 +18,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             """)
     Page<Task> findAllByCreator(Long creatorId, Pageable pageable);
 
-    //TODO: ADD FILTERING
     @Query("""
             SELECT t
             FROM Task t
