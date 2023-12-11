@@ -99,8 +99,8 @@ public class AuthService {
         if (jwtProvider.validateRefreshToken(refreshToken)) {
             final Claims claims = jwtProvider.getRefreshClaims(refreshToken);
             final String email = claims.getSubject();
-            final String saveRefreshToken = redis.opsForValue().get(email);
-            if (saveRefreshToken != null && saveRefreshToken.equals(refreshToken)) {
+            final String savedRefreshToken = redis.opsForValue().get(email);
+            if (savedRefreshToken != null && savedRefreshToken.equals(refreshToken)) {
                 final User user = userRepository.findByEmail(email)
                         .orElseThrow(() -> new UserNotFoundException("Cannot find user %s.".formatted(email)));
                 return generateTokens(user);
