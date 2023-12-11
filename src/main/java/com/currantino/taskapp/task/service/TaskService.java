@@ -60,6 +60,7 @@ public class TaskService {
                 .add(filter.assigneeId(), task.assignee.id::eq)
                 .add(filter.creatorId(), task.creator.id::eq)
                 .buildAnd();
+
         return taskRepository.findAll(predicate, pageable)
                 .map(taskMapper::toFullDto);
 

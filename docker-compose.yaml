@@ -1,12 +1,15 @@
 version: "3.9"
 
 services:
+
   task-app:
     image: 'currantino/task-app:0.0.1-SNAPSHOT'
     build: .
     depends_on:
-      - task-app-postgres
-      - task-app-redis
+      task-app-postgres:
+        condition: service_healthy
+      task-app-redis:
+        condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://task-app-postgres:5432/postgres
       POSTGRES_USER: postgres
@@ -17,22 +20,31 @@ services:
     ports:
       - '8080:8080'
 
-
   task-app-postgres:
     image: 'postgres:15'
     environment:
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_USER: postgres
-    #TODO: Add volume
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     expose:
       - 5432
 
   task-app-redis:
     image: 'redis:7'
     command: 'redis-server /etc/redis/redis.conf'
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
     volumes:
       - ./redis.conf:/etc/redis/redis.conf
     expose:
       - 6379
-
