@@ -1,8 +1,8 @@
 ## Запуск приложения
 
 ```bash
-    sudo chmod +x start.sh
-    ./start.sh
+    ./gradlew bootJar
+    docker-compose up
 ```
 
 ## Запуск тестов
