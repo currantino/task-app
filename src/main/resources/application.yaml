@@ -21,10 +21,7 @@ spring:
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:password}
       connect-timeout: ${REDIS_CONNECTION_TIMEOUT:5000}
-  docker:
-    compose:
-      enabled: false
-      file: docker-compose.yaml
+
 jwt:
   secret:
     access: qBTmv4oXFFR2GwjexDJ4t6fsIUIUhhXqlktXjXdkcyygs8nPVEwMfo29VDRRepYDVV5IkIxBMzr7OEHXEHd37w==
