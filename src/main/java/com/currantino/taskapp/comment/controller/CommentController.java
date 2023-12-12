@@ -4,6 +4,7 @@ import com.currantino.taskapp.comment.dto.CommentDto;
 import com.currantino.taskapp.comment.dto.CreateCommentDto;
 import com.currantino.taskapp.comment.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/api/v1/comment")
+
 @RestController
+@RequestMapping("/api/v1/comment")
+@SecurityRequirement(name = "jwtAuth")
 public class CommentController {
     private final CommentService commentService;
 
@@ -59,3 +62,4 @@ public class CommentController {
         return ResponseEntity.noContent().build();
     }
 }
+
