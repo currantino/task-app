@@ -6,6 +6,7 @@ import com.currantino.taskapp.task.dto.UpdateTaskDto;
 import com.currantino.taskapp.task.entity.TaskPriority;
 import com.currantino.taskapp.task.entity.TaskStatus;
 import com.currantino.taskapp.task.service.TaskService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,7 @@ public class TaskController {
         this.taskService = taskService;
     }
 
+    @Operation(summary = "Add new task.")
     @PostMapping()
     public ResponseEntity<TaskFullDto> addTask(
             @Valid
@@ -42,6 +44,7 @@ public class TaskController {
         return ResponseEntity.ok(task);
     }
 
+    @Operation(summary = "Get filtered tasks.")
     @GetMapping()
     public Page<TaskFullDto> getTasksFiltered(
             @RequestParam(name = "size",
@@ -74,15 +77,17 @@ public class TaskController {
         return taskService.getTasksFiltered(filter, pageable);
     }
 
+    @Operation(summary = "Get task by id.")
     @GetMapping("/{taskId}")
-    public TaskFullDto getTaskById(
+    public ResponseEntity<TaskFullDto> getTaskById(
             @PathVariable
             Long taskId
     ) {
-        return taskService.getTaskById(taskId);
+        TaskFullDto task = taskService.getTaskById(taskId);
+        return ResponseEntity.ok(task);
     }
 
-
+    @Operation(summary = "Get tasks created by user with id == creatorId.")
     @GetMapping("/creator/{creatorId}")
     public ResponseEntity<Page<TaskFullDto>> getTasksByCreator(
             @PathVariable
@@ -98,6 +103,7 @@ public class TaskController {
         return ResponseEntity.ok(tasksByCreator);
     }
 
+    @Operation(summary = "Get tasks assigned to user with id == assigneeId.")
     @GetMapping("/assignee/{assigneeId}")
     public ResponseEntity<Page<TaskFullDto>> getTasksByAssignee(
             @PathVariable
@@ -113,8 +119,9 @@ public class TaskController {
         return ResponseEntity.ok(tasksByCreator);
     }
 
+    @Operation(summary = "Update task by its id. Only task creator can update his tasks.")
     @PatchMapping("/{taskId}")
-    public ResponseEntity<TaskFullDto> updateMappingById(
+    public ResponseEntity<TaskFullDto> updateTaskById(
             @PathVariable
             Long taskId,
             @Valid
@@ -125,6 +132,7 @@ public class TaskController {
         return ResponseEntity.ok(task);
     }
 
+    @Operation(summary = "Update task status by its id. Only task creator and assignee can update task status.")
     @PatchMapping("/{taskId}/{taskStatus}")
     public ResponseEntity<TaskFullDto> updateTaskStatusById(
             @PathVariable
@@ -136,6 +144,7 @@ public class TaskController {
         return ResponseEntity.ok(task);
     }
 
+    @Operation(summary = "Delete task by its id. Only task creator can delete hist tasks.")
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Void> deleteTaskById(
             @PathVariable

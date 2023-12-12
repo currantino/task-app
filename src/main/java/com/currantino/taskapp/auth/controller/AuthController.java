@@ -6,6 +6,7 @@ import com.currantino.taskapp.jwt.RefreshJwtRequest;
 import com.currantino.taskapp.jwt.UserJwtResponse;
 import com.currantino.taskapp.user.dto.UserCredentialsDto;
 import com.currantino.taskapp.user.dto.UserFullDto;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class AuthController {
         this.authService = authService;
     }
 
-
+    @Operation(summary = "Registration of a new user")
     @PostMapping("/signup")
     public ResponseEntity<UserJwtResponse> signup(
             @Valid
@@ -40,26 +41,32 @@ public class AuthController {
                 .body(response);
     }
 
+    @Operation(summary = "Login existing user")
     @PostMapping("/login")
-    public UserJwtResponse login(@Valid
-                                 @RequestBody
-                                 UserCredentialsDto userDto) {
-        return authService.login(userDto);
+    public ResponseEntity<UserJwtResponse> login(@Valid
+                                                 @RequestBody
+                                                 UserCredentialsDto userDto) {
+        UserJwtResponse response = authService.login(userDto);
+        return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Get new access token by providing your refresh token.")
     @PostMapping("/token")
-    public JwtResponse getNewAccessToken(
+    public ResponseEntity<JwtResponse> getNewAccessToken(
             @RequestBody
             RefreshJwtRequest request
     ) {
-        return authService.getAccessToken(request.getRefreshToken());
+        JwtResponse response = authService.getAccessToken(request.getRefreshToken());
+        return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Get new refresh and access token by providing old refresh token.")
     @PostMapping("/refresh")
-    public JwtResponse getNewRefreshToken(
+    public ResponseEntity<JwtResponse> getNewRefreshToken(
             @RequestBody
             RefreshJwtRequest request
     ) {
-        return authService.refresh(request.getRefreshToken());
+        JwtResponse response = authService.refresh(request.getRefreshToken());
+        return ResponseEntity.ok(response);
     }
 }

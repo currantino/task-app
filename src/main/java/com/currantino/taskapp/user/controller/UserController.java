@@ -2,6 +2,7 @@ package com.currantino.taskapp.user.controller;
 
 import com.currantino.taskapp.user.dto.UserFullDto;
 import com.currantino.taskapp.user.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    @Operation(summary = "Get user by id.")
     @GetMapping("/{userId}")
     public ResponseEntity<UserFullDto> getUserById(@PathVariable
                                                    Long userId) {

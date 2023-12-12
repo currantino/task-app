@@ -112,4 +112,8 @@ public class AuthService {
     public Long getLoggedInUserId() {
         return ((JwtAuthentication) SecurityContextHolder.getContext().getAuthentication()).getUser().getId();
     }
+
+    public Role getLoggedInUserRole() {
+        return ((JwtAuthentication) SecurityContextHolder.getContext().getAuthentication()).getUser().getRole();
+    }
 }

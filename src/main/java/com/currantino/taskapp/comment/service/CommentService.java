@@ -11,6 +11,7 @@ import com.currantino.taskapp.exception.CommentNotFoundException;
 import com.currantino.taskapp.exception.TaskNotFoundException;
 import com.currantino.taskapp.task.entity.Task;
 import com.currantino.taskapp.task.repository.TaskRepository;
+import com.currantino.taskapp.user.entity.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -49,7 +50,8 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException("Could not find comment with id: " + commentId));
         Long realRequesterId = authService.getLoggedInUserId();
-        if (!comment.getAuthor().getId().equals(realRequesterId)) {
+        Role realRequesterRole = authService.getLoggedInUserRole();
+        if (!comment.getAuthor().getId().equals(realRequesterId) && realRequesterRole.equals(Role.ADMIN)) {
             throw new AccessDeniedException("You can not delete comments of other users.");
         }
         commentRepository.deleteById(commentId);
