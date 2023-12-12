@@ -74,6 +74,14 @@ public class TaskController {
         return taskService.getTasksFiltered(filter, pageable);
     }
 
+    @GetMapping("/{taskId}")
+    public TaskFullDto getTaskById(
+            @PathVariable
+            Long taskId
+    ) {
+        return taskService.getTaskById(taskId);
+    }
+
 
     @GetMapping("/creator/{creatorId}")
     public ResponseEntity<Page<TaskFullDto>> getTasksByCreator(

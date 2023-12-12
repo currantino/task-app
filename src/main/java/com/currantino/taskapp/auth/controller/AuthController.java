@@ -25,6 +25,7 @@ public class AuthController {
         this.authService = authService;
     }
 
+
     @PostMapping("/signup")
     public ResponseEntity<UserJwtResponse> signup(
             @Valid

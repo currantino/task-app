@@ -118,8 +118,10 @@ public class TaskService {
         if (!realUserId.equals(task.getCreator().getId())) {
             throw new AccessDeniedException("You can not update tasks of other users.");
         }
-        User assignee = userRepository.findById(taskDto.assigneeId())
-                .orElseThrow(() -> new UserNotFoundException("Could not find user with id: " + taskDto.assigneeId()));
+        if (taskDto.assigneeId() != null) {
+            User assignee = userRepository.findById(taskDto.assigneeId())
+                    .orElseThrow(() -> new UserNotFoundException("Could not find user with id: " + taskDto.assigneeId()));
+        }
         Task mapped = taskMapper.partialUpdate(taskDto, task);
         Task updated = taskRepository.save(mapped);
         return taskMapper.toFullDto(updated);
@@ -136,5 +138,11 @@ public class TaskService {
         task.setStatus(status);
         Task updated = taskRepository.save(task);
         return taskMapper.toFullDto(updated);
+    }
+
+    public TaskFullDto getTaskById(Long taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new TaskNotFoundException("Could not find task with id: " + taskId));
+        return taskMapper.toFullDto(task);
     }
 }
